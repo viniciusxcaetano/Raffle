@@ -1,36 +1,55 @@
-﻿using OpenQA.Selenium.Chrome;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
+﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Timer = System.Windows.Forms.Timer;
 
 namespace Raffle
 {
     public partial class Main : Form
     {
+        [DllImport("user32.dll")]
+        static extern bool SetCursorPos(int X, int Y);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out Point p);
+
+        [DllImport("user32.dll")]
+        public static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
+
         static Random random = new Random();
         static int mouseSpeed = 15;
-        System.Threading.Timer timer1;
 
         public Main()
         {
             InitializeComponent();
         }
 
-        private void btnIniciar_Click(object sender, EventArgs e)
+        private void btnStart_Click(object sender, EventArgs e)
         {
-            // MoveMouse(0, 0, 10, 20);
+            //Add a comment
+            MoveMouse(830, 604, 10, 20);
+            Thread.Sleep(1000);
+            //LeftClick();
+            Clipboard.SetText(textBoxComment.Text);
+            RightClick();
+            //Paste
+            MoveMouse(867, 419, 10, 20);
+            LeftClick();
+
+            //Post
+            MoveMouse(1109, 600, 10, 20);
+            LeftClick();
+
+            Thread.Sleep(2000);
         }
 
         private void Main_Load(object sender, EventArgs e)
         {
-            System.Windows.Forms.Timer t1 = new System.Windows.Forms.Timer();
+
+            // set position in form
+            Timer t1 = new Timer();
             t1.Interval = 50;
             t1.Tick += new EventHandler(timer1_Tick);
             t1.Enabled = true;
@@ -131,11 +150,25 @@ namespace Raffle
             return Math.Sqrt(dx * dx + dy * dy);
         }
 
-        [DllImport("user32.dll")]
-        static extern bool SetCursorPos(int X, int Y);
+        static void LeftClick()
+        {
+            int x = Cursor.Position.X;
+            int y = Cursor.Position.Y;
+            mouse_event(0x02, x, y, 0, 0);
+            mouse_event(0x04, x, y, 0, 0);
+        }
 
-        [DllImport("user32.dll")]
-        public static extern bool GetCursorPos(out Point p);
+        static void RightClick()
+        {
+            int x = Cursor.Position.X;
+            int y = Cursor.Position.Y;
+            mouse_event(0x08, x, y, 0, 0);
+            mouse_event(0x10, x, y, 0, 0);
+        }
 
+        //private const uint MOUSEEVENTF_LEFTDOWN = 0x02;
+        //private const uint MOUSEEVENTF_LEFTUP = 0x04;
+        //private const uint MOUSEEVENTF_RIGHTDOWN = 0x08;
+        //private const uint MOUSEEVENTF_RIGHTUP = 0x10;
     }
 }
